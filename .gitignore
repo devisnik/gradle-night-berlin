@@ -5,3 +5,6 @@ build/
 *.iml
 
 out/
+
+.DS_Store
+
