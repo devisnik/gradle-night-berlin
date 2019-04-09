@@ -1,0 +1,31 @@
+== Startup time
+
+=== Build Scans
+
+image::build-scan-overview.png[Build Scan Overview, 1100, 500]
+
+http://scans.gradle.com
+
+=== The build lifecycle
+
+image::scan-performance.png[the build lifecycle, 1100, 500]
+
+http://scans.gradle.com
+
+=== Red Flags
+
+- Startup/Settings/buildSrc > 1s
+- Single-line change -> clean build
+- No-op build doing any work
+- High GC time
+
+[%notitle]
+=== Red Flags example
+
+```
+// settings.gradle
+// do not do this
+new File('.').eachFile(FileType.DIRECTORIES) { dir ->
+    include dir.name
+}
+```

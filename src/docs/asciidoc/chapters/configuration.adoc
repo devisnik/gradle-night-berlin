@@ -1,0 +1,189 @@
+== Configuration
+
+=== What
+
+* applying plugins
+* evaluating build scripts
+* running `afterEvaluate{}` blocks
+
+=== When
+
+* on any Gradle run
+* Android Studio sync
+
+=== Resolution at configuration time
+
+https://scans.gradle.com/s/drql6mfq73cdi/performance/configuration#summary-task-created-immediately
+
+=== Eager Resolution
+
+[source,groovy]
+----
+task fatJar(type: Jar) {
+    from configurations.compile.collect { 
+	it.isDirectory() ? it : zipTree(it)
+    }
+    with jar
+    classifier = 'uber-jar'
+}
+----
+
+https://scans.gradle.com/s/drql6mfq73cdi/performance/configuration
+
+=== Lazy Resolution
+
+[source,groovy]
+----
+task fatJar(type: Jar) {
+    from { 
+	configurations.compile.collect { 
+	    it.isDirectory() ? it : zipTree(it) 
+	}
+    }
+    with jar
+    classifier = 'uber-jar'
+}
+----
+
+=== Configuration Avoidance
+
+[source,groovy]
+----
+tasks.register("fatJar", Jar) { 
+    from configurations.compile.collect { 
+        it.isDirectory() ? it : zipTree(it)
+    }
+    with jar
+    classifier = 'uber-jar'
+}
+----
+
+https://scans.gradle.com/s/ulzhbqz7wls5a/performance/configuration
+
+https://docs.gradle.org/current/userguide/task_configuration_avoidance.html
+https://blog.gradle.org/preview-avoiding-task-configuration-time
+
+=== I/O at configuration time
+
+That build script seems expensive
+
+https://scans.gradle.com/s/zs3qfbijbyka4/performance/configuration#stats.gradle
+
+=== I/O at configuration time
+
+[source,groovy]
+----
+task projectStats {
+    def statsFile = new File(buildDir, 'stats.txt')
+    statsFile.parentFile.mkdirs()
+    def javaFiles = sourceSets.main.java.size()
+    def javaSize = sourceSets.main.java
+	.collect{it.text.bytes}
+	.flatten()
+	.sum()
+    statsFile.text = """
+    |SourceFiles:  ${javaFiles}
+    |Source size:  ${javaSize} bytes
+    """.stripMargin()
+}
+----
+
+Where is the problem?
+
+=== I/O at configuration time
+
+[source,groovy]
+----
+task projectStats {
+    def statsFile = new File(buildDir, 'stats.txt')
+    input.files sourceSet.main.java
+    outputs.file statsFile
+    doLast {
+        statsFile.parentFile.mkdirs()
+        def javaFiles = sourceSets.main.java.size()
+        def javaSize = sourceSets.main.java
+        	.collect{it.text.bytes}
+        	.flatten()
+        	.sum()
+        statsFile.text = """
+        |SourceFiles:  ${javaFiles}
+        |Source size:  ${javaSize} bytes
+        """.stripMargin()
+    }
+}
+----
+
+Don't forget `doLast{}`
+
+=== I/O at configuration time
+
+[source,groovy]
+----
+task projectStats(type: ProjectStats) {
+    statsFile = new File(buildDir, 'stats.txt')
+    sources = sourceSet.main.java
+}
+
+class ProjectStats extends DefaultTask {
+    @InputFiles FileCollection sources
+    @OutputFile File statsFile
+
+    @TaskAction def stats() {
+      statsFile.text = """
+      |Files: ${sources.size()}
+      |Total: ${sources.collect{it.text.bytes}.flatten().sum()} bytes
+      """.stripMargin()
+    }
+}
+----
+
+=== Inefficient Plugins
+
+[source,groovy]
+----
+// version.gradle
+def out = new ByteArrayOutputStream()
+exec {
+    commandLine 'git','rev-parse','HEAD'
+    standardOutput = out
+    workingDir = rootDir
+}
+version = new String(out.toByteArray())
+
+// root 'build.gradle'
+allprojects {
+    apply from:'$rootDir/version.gradle'
+}
+----
+
+=== Re-use expensive logic
+
+[source,groovy]
+----
+// root 'build.gradle'
+apply from:"$rootDir/version.gradle"
+
+subprojects {
+    version = rootProject.version
+}
+----
+
+=== Variant explosion
+
+[source,groovy]
+----
+variantFilter { variant ->
+    def flavorName = variant.flavors[0].name
+    def freeFlavor = flavorName == 'free'
+    if(!freeFlavor && variant.buildType.name == 'release') {
+        variant.ignore = true
+    }
+}
+----
+
+=== Configuration Time
+
+- Avoid dependency resolution
+- Avoid I/O
+- Dont repeat yourself
+

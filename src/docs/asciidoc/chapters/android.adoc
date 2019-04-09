@@ -1,0 +1,67 @@
+== Improvements in AGP?
+
+=== Improving Build Speed
+
+https://medium.com/androiddevelopers/improving-build-speed-in-android-studio-3e1425274837
+
+=== Configuration Avoidance
+
+K-9: tasks created in 3.2.1 vs 3.3.2
+
+* AGP3.2.1
+https://scans.gradle.com/s/yb6nlteqjfg3e/performance/configuration?openScriptsAndPlugins=WzAsMV0#android-library
+* AGP3.3.2
+https://scans.gradle.com/s/mvkrvxqjv76yu/performance/configuration?openScriptsAndPlugins=WzEsMF0#com.android.library
+
+https://docs.gradle.org/current/userguide/task_configuration_avoidance.html
+
+=== Cacheability
+
+K-9: tests in `mail` subprojects
+
+* AGP3.2.1
+https://gradle.com/s/myfmftgb2oq46
+* AGP3.3.2
+https://gradle.com/s/fnyeyuqwq4smc
+* AGP3.4.0-rc02
+https://gradle.com/s/anej7zjlita4m
+* AGP3.5.0-alpha10
+https://gradle.com/s/4syrt4v2kevqw
+
+=== Lint
+
+K-9: `check -x test`
+
+* AGP 3.2.1 / no parallel
+https://gradle.com/s/4plps3frlfvum
+* AGP 3.2.1 / parallel
+https://gradle.com/s/4drqo5ptwx2ku
+* AGP 3.3.2 / parallel
+https://gradle.com/s/npoywvn63kg2k
+
+=== Cacheability
+
+https://docs.gradle.org/current/userguide/build_cache.html
+
+* https://issuetracker.google.com/issues/121288180
+* https://issuetracker.google.com/issues/121251997
+* https://issuetracker.google.com/issues/115873047
+* https://issuetracker.google.com/issues/115873051
+
+=== Annotation Processing Improvements
+
+https://docs.gradle.org/current/userguide/java_plugin.html#sec:incremental_annotation_processing
+
+* https://issuetracker.google.com/issues/115774858
+
+=== Memory Leak Fixes
+
+* https://issuetracker.google.com/issues/123068209
+* https://issuetracker.google.com/issues/122301106
+
+=== Databinding
+
+* https://issuetracker.google.com/issues/110061530#comment28
+
+// include::android-outtakes.adoc[]
+

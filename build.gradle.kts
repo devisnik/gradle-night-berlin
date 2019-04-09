@@ -3,6 +3,6 @@ plugins {
 }
 
 presentation {
-    githubUserName.set("melix")
-    githubRepoName.set("gradle-presentation-template")
+    githubUserName.set("devisnik")
+    githubRepoName.set("gradle-night-berlin")
 }

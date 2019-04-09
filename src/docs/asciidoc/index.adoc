@@ -10,82 +10,36 @@ ifndef::sourcedir[:sourcedir: ../java]
 :title-slide-transition-speed: fast
 :icons: font
 
-= : Switching to Gradle
+= : State-of-the-art Gradle Android Builds
 
 +++<h2>+++
-Maturity, performance and pleasure!
+Gradle Night Berlin
 +++</h2>+++
 
-Cédric Champeau (@CedricChampeau) & Louis Jacomet (@ljacomet) - Gradle Inc.
-
-== Who are we?
-
-[%notitle]
-=== Cedric
-[source,groovy]
-----
-speaker {
-    name 'Cédric Champeau'
-    company 'Gradle Inc'
-    oss 'Apache Groovy committer',
-    successes 'Static type checker',
-              'Static compilation',
-              'Traits',
-              'Markup template engine',
-              'DSLs'
-        failures Stream.of(bugs),
-        twitter '@CedricChampeau',
-        github 'melix',
-        extraDescription '''Groovy in Action 2 co-author
-Misc OSS contribs'''
-}
-----
-
-[%notitle]
-=== Louis
-[source,groovy]
-----
-speaker {
-    name 'Louis Jacomet'
-    company 'Gradle Inc'
-    past 'Terracotta / Ehcache',
-              'Freelance consultant',
-        failures Stream.of(bugs),
-        twitter '@ljacomet',
-        github 'ljacomet',
-        extraDescription '''Not fully figured out
-how to stay out of management?!?'''
-}
-----
+Volker Leck (@devisnik) - Gradle Inc.
 
 include::chapters/about-gradle.adoc[]
-
-== A screencast
-
-screencast:step1[]
-
-== Another screencast
-
-screencast:step2[]
+include::chapters/modern-build.adoc[]
+include::chapters/gradle-in-a-nutshell.adoc[]
+include::chapters/perf-matters.adoc[]
+include::chapters/configuration.adoc[]
+include::chapters/build-cache.adoc[]
+include::chapters/android.adoc[]
 
 == Conclusion
 
-=== Gradle Enterprise
+=== Takeaways
 
-* On premise build cache and build scan solution
-* Out of the box solution for distributed build cache
-* Improved build scan feature set
-** Searchable build history
-** Build comparison
+* know your build
+* monitor and measure
+* avoid unnecessary configuration
+* avoid repeated work
 
-=== Sessions at Devoxx BE
+=== Resources
 
-* https://dvbe18.confinabox.com/talk/DBF-1594/project_versioning_like_a_git[Project versioning like a git]
-** Matthieu Brouillard
-** Wednesday, 13:30 - 13:45 Room 5
+https://docs.gradle.org
 
-* https://dvbe18.confinabox.com/talk/VFH-6802/Improving_Android_Build_Performance[Improving Android Build performance]
-** Cédric Champeau
-**  Thursday, 16:30 - 17:15 Room 3
+== Thank you!
+
 
 

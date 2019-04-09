@@ -1,0 +1,99 @@
+== Gradle build cache
+
+=== Task caching
+
+* cache key based on inputs
+* outputs fetched from cache if available
+* no task action (re-)executed
+* opt-in (task declares cacheability)
+
+=== Usage scenarios
+
+* Local branch switching 
+* CI populated cache for (distributed) team
+* Faster CI builds with stateless agents
+
+=== Mechanics
+
+* stable inputs
+* repeatable outputs
+* classpath normalization
+* Path relocatability
+
+=== Enable caching
+
+`org.gradle.caching = true`
+
+.build.gradle
+[source,groovy]
+----
+// only for kotlin < 1.3.30
+subprojects {
+    pluginManager.withPlugin("kotlin-kapt") {
+        kapt.useBuildCache = true
+    }
+}
+
+----
+https://youtrack.jetbrains.com/issue/KT-27675
+
+* uses local cache by default
+
+=== Cached unit tests
+
+* the default for java projects
+* coming in AGP 3.5
+* be aware of `includeAndroidResources = true`
+
+https://issuetracker.google.com/issues/115873047#comment4
+
+=== Android best practices
+
+https://guides.gradle.org/using-build-cache/#caching_android_projects
+
+=== Remote cache
+
+image::build-cache.png[width=600px,height=500px]
+
+=== !
+
+.settings.gradle
+[source, groovy]
+----
+def runsOnCI = System.getEnv("CI") != null
+
+buildCache {
+    local {
+        enabled = !runsOnCI 
+    }
+    remote(HttpBuildCache) {
+        push = runsOnCI
+        url = 'https://my.server.com:8080/cache/'
+	// if cache access is secured
+	credentials {
+	    username = 'cache-user'
+	    password = 'super-secret-pw'
+        }
+    }
+}
+----
+
+https://docs.gradle.org/current/userguide/build_cache.html#sec:build_cache_configure
+
+=== Gradle Remote Cache Backend
+
+[source,bash]
+----
+docker run -d \ 
+	   -v /opt/build-cache-node:/data \
+           -p 80:5071 \
+	   gradle/build-cache-node:latest
+----
+
+https://docs.gradle.com/build-cache-node/
+
+=== Gradle Enterprise cache $$$
+
+https://gradle.com/build-cache/
+
+

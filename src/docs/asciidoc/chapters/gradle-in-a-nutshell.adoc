@@ -1,0 +1,117 @@
+// [background-color="#02303A"]
+== Gradle in a nutshell
+
+=== Core Engine
+
+image::gradle-task-dag.png[height=350px]
+
+=== Core Engine
+
+* Groovy and Kotlin build scripts
+* Task configuration and execution
+* Dependency resolution
+* Work avoidance
+
+=== !
+
+[source,bash]
+----
+├── [ 962]  build.gradle
+├── [  96]  gradle
+│       ├── [ 54K]  gradle-wrapper.jar
+│       └── [ 202]  gradle-wrapper.properties
+├── [5.8K]  gradlew
+├── [2.9K]  gradlew.bat
+├── [ 359]  settings.gradle
+----
+ 
+[transition=none]
+=== Plugins
+
+* adapt core engine to a domain
+* make build declarative
+  
+=== !
+
+* Core Plugins 
+** `java-library`, `application`, `groovy`, `maven-publish` ...
+* Community Plugins 
+** `kotlin`, `android`, `golang`, `pygradle`, `asciidoctor` ...
+
+=== !
+
+* Plugins contribute
+[%step]
+** reusable and configurable tasks
+** configurable extensions
+
+[transition=none]
+=== !
+
+* Plugins contribute *a model to configure*
+[%step]
+** in build scripts
+** using a DSL
+
+=== A Java library (Groovy DSL)
+
+[source,groovy]
+----
+plugins {
+   id "java-library"
+}
+
+dependencies {
+   api "com.acme:foo:1.0"
+   implementation "com.zoo:monkey:1.1"
+}
+
+tasks.withType(JavaCompile) {
+    // ...
+}
+----
+
+=== A native app (Kotlin DSL)
+
+[source,groovy]
+----
+plugins {
+    `cpp-application`
+}
+
+application {
+    baseName = "my-app"
+}
+
+toolChains {
+    // ...
+}
+----
+
+=== An Android App
+
+[source,groovy]
+----
+apply plugin: 'com.android.application'
+
+dependencies {
+    implementation "androidx.appcompat:appcompat:1.0.2"
+    // ...
+}
+
+android {
+    compileSdkVersion 28
+    buildToolsVersion "28.0.3"
+    // ...
+    defaultConfig {
+        minSdkVersion 19
+        targetSdkVersion 28
+    }
+    // ...
+}
+----
+
+=== DEMO
+
+https://github.com/k9mail/k-9
+

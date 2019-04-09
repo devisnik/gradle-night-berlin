@@ -1,0 +1,171 @@
+== Perf matters
+
+=== What is slow?
+
+* structured approach
+** define scenario
+** profile
+** identify bottlenecks
+** fix
+** verify fix
+** repeat
+
+=== Toolbelt
+
+* `--profile`
+* `--scan`
+* Gradle profiler
+
+=== Build Scans
+
+image::build-scan-overview.png[Build Scan Overview, 1100, 500]
+
+http://scans.gradle.com
+
+=== Gradle Profiler
+
+* runs pre-defined scenarios
+* can produce Build scans
+
+[source]
+----
+check-no-tests {
+    tasks = ["check"]
+    gradle-args = ["-x", "test"]
+    cleanup-tasks = ["clean"]
+    run-using = tooling-api // value can also be "cli" or "no-daemon"
+    warm-ups = 2
+}
+----
+
+https://github.com/gradle/gradle-profiler
+
+=== General Advice
+
+=== Stay up-to-date
+
+`./gradlew wrapper --gradle-version 5.3.1`
+
+[source,groovy]
+.build.gradle
+----
+classpath 'com.android.tools.build:gradle:3.3.2'
+----
+
+=== JVM Tuning
+
+`org.gradle.jvmargs=-Xmx4G`
+
+* provide enough heap space
+* tweaks often do more harm than good
+* rather work on structural improvements
+
+=== Daemon
+
+`org.gradle.daemon = true`
+
+* enabled by default
+* in-memory caches
+* when building repeatedly
+* Do not disable it!
+
+=== Parallelism
+
+`org.gradle.parallel = true`
+
+* not enabled by default
+* usually safe to enable
+* speeds up multi-project builds
+
+=== Build Cache
+
+`org.gradle.caching = true`
+
+[source,groovy]
+----
+// root build.gradle
+// only for kotlin < 1.3.30
+subprojects {
+	pluginManager.withPlugin("kotlin-kapt") {
+		kapt.useBuildCache = true
+	}
+}
+----
+
+=== Where is the problem?
+
+=== Build Lifecycle
+
+image::scan-performance.png[the build lifecycle, 1100, 500]
+
+=== Red flags
+
+* startup / settings / buildSrc > 1s
+* no-op build doing any work
+* single line change ~= clean build
+* high gc time
++
+K-9 with `-Xmx=1G`: https://gradle.com/s/n7q54jqbq3qma
+
+[%notitle]
+=== Red Flags example
+
+[source,groovy]
+----
+// settings.gradle
+// do not do this
+new File('.').eachFile(FileType.DIRECTORIES) { dir ->
+    include dir.name
+}
+----
+
+=== Startup / Settings / BuildSrc 
+
+image::scans-daemon-status.png[keep daemon healty, 1100, 350]
+
+https://scans.gradle.com/s/n7q54jqbq3qma/performance/daemon
+
+`./gradlew --status`
+
+`pgrep -lf "GradleDaemon"`
+
+=== Configuration
+
+* Applying plugins
+* Evaluating build scripts 
+* Running afterEvaluate {} blocks
+
+=== Configuration time
+
+* Before running any task
+* Even gradlew help / gradlew tasks 
+* Android Studio sync
+
+Avoid Dependency resolution at configuration time!
+
+Be aware of inefficient plugins!
+
+=== Execution
+* Executing selected tasks 
+* Incremental 
+* Cacheable 
+* Parallelizable
+
+=== Incremental Builds
+
+Nothing changed? 
+Executed tasks should be zero!
+
+Watch out for volatile inputs!
+
+=== Faster Compilation
+* Modularization => Compile avoidance 
+* Decoupled code => Faster incremental compilation 
+* Careful with Kotlin annotation processing (for now)
+
+=== Resources
+
+* https://gradle.com/blog/improving-android-and-java-build-performance/
+* Tony Robalik: droidcon SF 2018 - Improving Android Build performance
+https://www.youtube.com/watch?v=XZFnuFUMT7w
+

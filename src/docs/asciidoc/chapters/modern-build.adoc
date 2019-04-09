@@ -1,0 +1,18 @@
+== What is a modern build?
+
+=== !
+* reliable / reproducible
+* customizable
+* universal
+* self-contained 
+* fast, smart
+* maintainable
+
+=== Build engineering
+[quote, "Hans Dockter, Founder and CEO of Gradle Inc."]
+____
+In a healthy culture, developers and engineering leaders understand that the domain of building and integrating software is just as complex and challenging as the domain of application development.
+____
+
+https://gradle.com/blog/build-engineer-challenges/
+
